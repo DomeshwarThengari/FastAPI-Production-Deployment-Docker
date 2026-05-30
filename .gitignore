@@ -1,0 +1,19 @@
+# Environment files containing sensitive credentials
+.env
+
+# SSL/TLS Private Keys and Certificates
+nginx/certs/
+*.key
+*.crt
+*.pem
+
+# Python byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS generated files
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db

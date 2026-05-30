@@ -1,0 +1,42 @@
+# Git directories and repository meta
+.git
+.github
+
+# Environment configs containing sensitive secrets
+.env
+.env.example
+
+# Docker configuration files (not needed inside the web container itself)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Nginx configurations (routed to Nginx container, not Python container)
+nginx/
+
+# Python compiled cache and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDEs, editor configurations, and metadata
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# QA/Testing assets
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Miscellaneous
+README.md
+.qodo/

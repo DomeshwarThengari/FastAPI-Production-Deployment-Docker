@@ -1,0 +1,48 @@
+name: CD Pipeline - Deploy to Production
+
+# Trigger the workflow only when pushing to the main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Stack to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Connect to VPS via SSH and perform deployment commands
+      - name: Execute Remote SSH Commands to Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            # 1. Navigate to the project root directory
+            # NOTE: Please adjust this path on your target VPS to match your deployment directory.
+            PROJECT_DIR="/home/${{ secrets.SSH_USERNAME }}/Fast-API-deployment"
+            
+            if [ -d "$PROJECT_DIR" ]; then
+              cd "$PROJECT_DIR"
+            else
+              echo "Deployment directory $PROJECT_DIR does not exist. Please clone the repository first."
+              exit 1
+            fi
+
+            # 2. Pull the latest commits from the main branch
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            # 3. Rebuild and launch the updated multi-container stack with zero-downtime
+            echo "Building and launching containers..."
+            docker compose up --build -d
+
+            # 4. Prune old images and dangling system resources to free disk space
+            echo "Pruning unused docker images and resources..."
+            docker image prune -f
+            docker system prune --volumes -f
+            
+            echo "Deployment successfully completed!"
