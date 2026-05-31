@@ -22,7 +22,6 @@ jobs:
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
             # 1. Navigate to the project root directory
-            # NOTE: Please adjust this path on your target VPS to match your deployment directory.
             PROJECT_DIR="/home/${{ secrets.SSH_USERNAME }}/Fast-API-deployment"
             
             if [ -d "$PROJECT_DIR" ]; then
@@ -36,9 +35,12 @@ jobs:
             echo "Pulling latest changes..."
             git pull origin main
 
-            # 3. Rebuild and launch the updated multi-container stack with zero-downtime
-            echo "Building and launching containers..."
-            docker compose up --build -d
+            # 3. Rebuild and launch the updated multi-container stack with zero-downtime logic
+            echo "Building new images..."
+            docker compose build web
+            
+            echo "Restarting web container with minimal disruption..."
+            docker compose up -d --no-deps web nginx
 
             # 4. Prune old images and dangling system resources to free disk space
             echo "Pruning unused docker images and resources..."
